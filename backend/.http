@@ -1,12 +1,23 @@
-### Register
+### Register Job Seeker
 POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
   "name": "Nithya",
-  "email": "nithya@example.com",
+  "email": "nithyap@example.com",
   "password": "mypassword123",
   "role": "job_seeker"
+}
+
+### Register Employer
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Employer1",
+  "email": "emp1@example.com",
+  "password": "emp1password",
+  "role": "employer"
 }
 
 ### Login
@@ -14,10 +25,26 @@ POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "nithya@example.com",
+  "email": "nithyap@example.com",
   "password": "mypassword123"
 }
 
 ### Get Profile
 GET http://localhost:5000/api/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDgzMzQwNCwianRpIjoiM2Q5YTZjNjMtZWM2ZS00ZjNmLWFiYTgtNGU5YjFlZmI0NjM5IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjQiLCJuYmYiOjE3NTA4MzM0MDQsImNzcmYiOiIxNWVmNWUyYi1hYTVkLTQ0N2MtOTQ3MS04ODdkZWMwYTg3NTEiLCJleHAiOjE3NTA4MzUyMDQsIm5hbWUiOiJOaXRoeWEiLCJyb2xlIjoiam9iX3NlZWtlciJ9.Tj4lkTHedhIidagIUsEdPNqtZX7H7wmn5rdHtwrQyVQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDgzNTk3MSwianRpIjoiMmNlZDE5ZjgtZGIxZS00N2QwLWJjY2UtMDRhYmJhY2IxMzAwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEiLCJuYmYiOjE3NTA4MzU5NzEsImNzcmYiOiIyNWZlYTU2MS0zMjc0LTQ2MDUtODU5Yy1kOTk2ZDBlODJkNjgiLCJleHAiOjE3NTA4Mzc3NzEsIm5hbWUiOiJOaXRoeWEiLCJyb2xlIjoiam9iX3NlZWtlciJ9.JJM2wS427ULntnJug40Pb6DLpAsiazyhhtCeHZeOTX0
+
+### Get all Jobs
+GET http://localhost:5000/api/jobs
+
+### Apply for a Job
+POST http://localhost:5000/api/jobs/apply
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDgzNTk3MSwianRpIjoiMmNlZDE5ZjgtZGIxZS00N2QwLWJjY2UtMDRhYmJhY2IxMzAwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEiLCJuYmYiOjE3NTA4MzU5NzEsImNzcmYiOiIyNWZlYTU2MS0zMjc0LTQ2MDUtODU5Yy1kOTk2ZDBlODJkNjgiLCJleHAiOjE3NTA4Mzc3NzEsIm5hbWUiOiJOaXRoeWEiLCJyb2xlIjoiam9iX3NlZWtlciJ9.JJM2wS427ULntnJug40Pb6DLpAsiazyhhtCeHZeOTX0
+
+{
+  "job_id": 2
+}
+
+### Get Applied Jobs
+GET http://localhost:5000/api/applications
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDgzNTk3MSwianRpIjoiMmNlZDE5ZjgtZGIxZS00N2QwLWJjY2UtMDRhYmJhY2IxMzAwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEiLCJuYmYiOjE3NTA4MzU5NzEsImNzcmYiOiIyNWZlYTU2MS0zMjc0LTQ2MDUtODU5Yy1kOTk2ZDBlODJkNjgiLCJleHAiOjE3NTA4Mzc3NzEsIm5hbWUiOiJOaXRoeWEiLCJyb2xlIjoiam9iX3NlZWtlciJ9.JJM2wS427ULntnJug40Pb6DLpAsiazyhhtCeHZeOTX0
