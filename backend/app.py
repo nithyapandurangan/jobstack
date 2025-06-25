@@ -26,6 +26,10 @@ jwt = JWTManager(app)
 from routes.auth_routes import auth_bp
 app.register_blueprint(auth_bp, url_prefix="/api/auth")
 
+from routes.jobseeker_routes import jobseeker_bp
+app.register_blueprint(jobseeker_bp, url_prefix="/api")
+
+
 @app.route('/')
 def home():
     return {"message": "JobStack API is running"}

@@ -1,3 +1,4 @@
+### Register
 POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
@@ -7,3 +8,16 @@ Content-Type: application/json
   "password": "mypassword123",
   "role": "job_seeker"
 }
+
+### Login
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "nithya@example.com",
+  "password": "mypassword123"
+}
+
+### Get Profile
+GET http://localhost:5000/api/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDgzMzQwNCwianRpIjoiM2Q5YTZjNjMtZWM2ZS00ZjNmLWFiYTgtNGU5YjFlZmI0NjM5IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjQiLCJuYmYiOjE3NTA4MzM0MDQsImNzcmYiOiIxNWVmNWUyYi1hYTVkLTQ0N2MtOTQ3MS04ODdkZWMwYTg3NTEiLCJleHAiOjE3NTA4MzUyMDQsIm5hbWUiOiJOaXRoeWEiLCJyb2xlIjoiam9iX3NlZWtlciJ9.Tj4lkTHedhIidagIUsEdPNqtZX7H7wmn5rdHtwrQyVQ

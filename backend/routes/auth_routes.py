@@ -45,6 +45,8 @@ def register():
 
     except Exception as e:
         # If email already exists or any other DB error
+        if "Duplicate entry" in str(e):
+            return jsonify({"error": "Email already exists"}), 400
         return jsonify({"error": str(e)}), 500
 
 # Login an existing user
@@ -73,7 +75,8 @@ def login():
             if check_password_hash(hashed_pw, password):
                 # Create JWT token with user identity if password is correct
                 access_token = create_access_token(
-                    identity={"id": user_id, "name": name, "role": role},
+                    identity=str(user_id),
+                    additional_claims={"name": name, "role": role},
                     expires_delta=datetime.timedelta(seconds=Config.JWT_EXPIRY_SECONDS)
                 )
                 return jsonify({"token": access_token}), 200
