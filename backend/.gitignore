@@ -1,0 +1,9 @@
+# Ignore Python virtual environment
+venv/
+__pycache__/
+
+# Ignore dotenv file with secrets
+.env
+
+# MacOS generated files
+.DS_Store
