@@ -156,7 +156,7 @@ def update_job(job_id):
         return jsonify({"error": "No valid fields to update"}), 400
 
     update_values.append(job_id)
-    
+
     # Construct the update query dynamically
     update_query = f"UPDATE jobs SET {', '.join(update_fields)} WHERE id = %s"
     cursor.execute(update_query, tuple(update_values))
@@ -164,4 +164,58 @@ def update_job(job_id):
     cursor.close()
 
     return jsonify({"message": "Job updated successfully"}), 200
-    
+
+### /api/employer/jobs/<int:job_id> - Delete a job posting
+@employer_bp.route('/jobs/<int:job_id>', methods=['DELETE'])
+@jwt_required()
+def delete_job(job_id):
+    try:
+        user_id = int(get_jwt_identity())
+        mysql = current_app.extensions['mysql']
+        cur = mysql.connection.cursor()
+
+        # Check ownership
+        cur.execute("SELECT id FROM jobs WHERE id = %s AND posted_by = %s", (job_id, user_id))
+        job = cur.fetchone()
+        if not job:
+            return jsonify({"error": "Job not found or unauthorized"}), 404
+
+        # Delete applications related to this job first (foreign key)
+        cur.execute("DELETE FROM applications WHERE job_id = %s", (job_id,))
+        # Then delete the job itself
+        cur.execute("DELETE FROM jobs WHERE id = %s", (job_id,))
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"message": "Job deleted successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+### /api/employer/jobs/<int:job_id>/close - Close a job
+@employer_bp.route("/jobs/<int:job_id>/close", methods=["PATCH"])
+@jwt_required()
+def close_job(job_id):
+    try:
+        user_id = int(get_jwt_identity())
+        mysql = current_app.extensions['mysql']
+        cur = mysql.connection.cursor()
+
+        # Verify ownership
+        cur.execute("SELECT id, is_closed FROM jobs WHERE id = %s AND posted_by = %s", (job_id, user_id))
+        job = cur.fetchone()
+        if not job:
+            return jsonify({"error": "Job not found or unauthorized"}), 404
+
+        if job[1]:  # already closed
+            return jsonify({"message": "Job is already closed"}), 400
+        
+        # Update job to mark it as closed
+        cur.execute("UPDATE jobs SET is_closed = TRUE WHERE id = %s", (job_id,))
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"message": "Job closed successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
