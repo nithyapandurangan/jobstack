@@ -14,9 +14,9 @@ POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "name": "Employer1",
-  "email": "emp1@example.com",
-  "password": "emp1password",
+  "name": "Employer2",
+  "email": "emp2@example.com",
+  "password": "emp2password",
   "role": "employer"
 }
 
@@ -27,6 +27,15 @@ Content-Type: application/json
 {
   "email": "nithyap@example.com",
   "password": "mypassword123"
+}
+
+### Login as Employer
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "emp2@example.com",
+  "password": "emp2password"
 }
 
 ### Get Profile
@@ -48,3 +57,40 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsI
 ### Get Applied Jobs
 GET http://localhost:5000/api/applications
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDgzNTk3MSwianRpIjoiMmNlZDE5ZjgtZGIxZS00N2QwLWJjY2UtMDRhYmJhY2IxMzAwIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjEiLCJuYmYiOjE3NTA4MzU5NzEsImNzcmYiOiIyNWZlYTU2MS0zMjc0LTQ2MDUtODU5Yy1kOTk2ZDBlODJkNjgiLCJleHAiOjE3NTA4Mzc3NzEsIm5hbWUiOiJOaXRoeWEiLCJyb2xlIjoiam9iX3NlZWtlciJ9.JJM2wS427ULntnJug40Pb6DLpAsiazyhhtCeHZeOTX0
+
+### Create Job as Employer
+POST http://localhost:5000/api/employer/jobs/create
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDkxNTQ1NiwianRpIjoiNzE2NDljMGMtNjkzMy00NGQ0LTk1YWYtNWVhNWIzMWZkOGRlIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjQiLCJuYmYiOjE3NTA5MTU0NTYsImNzcmYiOiJkOWFkNjgyYi1kZjViLTQ1NTktOTkyOC01ZjU5Y2UzMWUwMDUiLCJleHAiOjE3NTA5MTcyNTYsIm5hbWUiOiJFbXBsb3llcjIiLCJyb2xlIjoiZW1wbG95ZXIifQ.i7TduKiSMJTWcb1_XCsRnwFTF_JVGYV8SKw1cxgo2wU
+
+{
+  "title": "Full Stack Developer",
+  "description": "Build APIs and UI for scalable apps.",
+  "location": "Delhi",
+  "work_mode": "Remote",
+  "yoe": "1",
+  "salary": "₹70,000",
+  "company": "NextGen Web"
+}
+
+### List Jobs Posted by Employer
+GET http://localhost:5000/api/employer/jobs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDkxNTQ1NiwianRpIjoiNzE2NDljMGMtNjkzMy00NGQ0LTk1YWYtNWVhNWIzMWZkOGRlIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjQiLCJuYmYiOjE3NTA5MTU0NTYsImNzcmYiOiJkOWFkNjgyYi1kZjViLTQ1NTktOTkyOC01ZjU5Y2UzMWUwMDUiLCJleHAiOjE3NTA5MTcyNTYsIm5hbWUiOiJFbXBsb3llcjIiLCJyb2xlIjoiZW1wbG95ZXIifQ.i7TduKiSMJTWcb1_XCsRnwFTF_JVGYV8SKw1cxgo2wU
+
+### View Applications for a Job as Employer
+GET http://localhost:5000/api/employer/jobs/4/applications
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDkxNTQ1NiwianRpIjoiNzE2NDljMGMtNjkzMy00NGQ0LTk1YWYtNWVhNWIzMWZkOGRlIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjQiLCJuYmYiOjE3NTA5MTU0NTYsImNzcmYiOiJkOWFkNjgyYi1kZjViLTQ1NTktOTkyOC01ZjU5Y2UzMWUwMDUiLCJleHAiOjE3NTA5MTcyNTYsIm5hbWUiOiJFbXBsb3llcjIiLCJyb2xlIjoiZW1wbG95ZXIifQ.i7TduKiSMJTWcb1_XCsRnwFTF_JVGYV8SKw1cxgo2wU
+
+### Update Job as Employer - PATCH
+PATCH http://localhost:5000/api/employer/jobs/4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDkxNTQ1NiwianRpIjoiNzE2NDljMGMtNjkzMy00NGQ0LTk1YWYtNWVhNWIzMWZkOGRlIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjQiLCJuYmYiOjE3NTA5MTU0NTYsImNzcmYiOiJkOWFkNjgyYi1kZjViLTQ1NTktOTkyOC01ZjU5Y2UzMWUwMDUiLCJleHAiOjE3NTA5MTcyNTYsIm5hbWUiOiJFbXBsb3llcjIiLCJyb2xlIjoiZW1wbG95ZXIifQ.i7TduKiSMJTWcb1_XCsRnwFTF_JVGYV8SKw1cxgo2wU
+Content-Type: application/json
+
+{
+  "salary": "₹90,000",
+  "yoe": "2",
+}
+
+### Delete Job as Employer
+DELETE http://localhost:5000/api/employer/jobs/4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDkxNTQ1NiwianRpIjoiNzE2NDljMGMtNjkzMy00NGQ0LTk1YWYtNWVhNWIzMWZkOGRlIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjQiLCJuYmYiOjE3NTA5MTU0NTYsImNzcmYiOiJkOWFkNjgyYi1kZjViLTQ1NTktOTkyOC01ZjU5Y2UzMWUwMDUiLCJleHAiOjE3NTA5MTcyNTYsIm5hbWUiOiJFbXBsb3llcjIiLCJyb2xlIjoiZW1wbG95ZXIifQ.i7TduKiSMJTWcb1_XCsRnwFTF_JVGYV8SKw1cxgo2wU
