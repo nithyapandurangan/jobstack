@@ -26,16 +26,17 @@ jwt = JWTManager(app)
 # Authentication routes
 from routes.auth_routes import auth_bp
 app.register_blueprint(auth_bp, url_prefix="/api/auth")
-
 # Jobseeker and Employer routes
 from routes.jobseeker_routes import jobseeker_bp
 app.register_blueprint(jobseeker_bp, url_prefix="/api")
 from routes.employer_routes import employer_bp
 app.register_blueprint(employer_bp, url_prefix="/api/employer")
-
 # Job routes
 from routes.job_routes import jobs_bp
 app.register_blueprint(jobs_bp, url_prefix="/api/jobs")
+# Admin routes
+from routes.admin_routes import admin_bp
+app.register_blueprint(admin_bp, url_prefix="/api/admin")
 
 @app.route('/')
 def home():
