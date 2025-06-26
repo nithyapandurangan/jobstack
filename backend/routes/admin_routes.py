@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, current_app, request
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -153,3 +153,32 @@ def reopen_job(job_id):
 
     return jsonify({"message": "Job reopened successfully"}), 200
 
+### /jobs/job-id - Delete a job
+@admin_bp.route("/jobs/<int:job_id>", methods=["DELETE"])
+@jwt_required()
+def delete_job_by_admin(job_id):
+    try:
+        claims = get_jwt()
+        if claims.get("role") != "admin":
+            return jsonify({"error": "Only admins can delete jobs"}), 403
+
+        mysql = current_app.extensions['mysql']
+        cur = mysql.connection.cursor()
+
+        # Check if job exists
+        cur.execute("SELECT id FROM jobs WHERE id = %s", (job_id,))
+        job = cur.fetchone()
+        if not job:
+            return jsonify({"error": "Job not found"}), 404
+
+        # Delete related applications first
+        cur.execute("DELETE FROM applications WHERE job_id = %s", (job_id,))
+        # Delete the job
+        cur.execute("DELETE FROM jobs WHERE id = %s", (job_id,))
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"message": "Job deleted by admin successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
