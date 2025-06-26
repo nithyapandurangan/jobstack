@@ -26,6 +26,8 @@ def create_job():
     yoe = data.get("yoe")
     salary = data.get("salary")
     company = data.get("company")
+    skills_list = data.get("skills")  # get the list from JSON
+    skills_str = ",".join(skills_list) if skills_list else None  # join it to a string for DB
 
     # Validate required fields
     if not all([title, description, location, work_mode, yoe, salary, company]):
@@ -33,9 +35,9 @@ def create_job():
 
     # Insert job into the database
     cursor.execute("""
-        INSERT INTO jobs (title, description, location, work_mode, yoe, salary, company, posted_by)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-    """, (title, description, location, work_mode, yoe, salary, company, user))
+        INSERT INTO jobs (title, description, location, work_mode, yoe, salary, company, posted_by, skills)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """, (title, description, location, work_mode, yoe, salary, company, user, skills_str))
 
     db.commit()
     return jsonify({"message": "Job created successfully"}), 201
@@ -51,7 +53,7 @@ def list_employer_jobs():
 
         # Query jobs posted by this employer
         cur.execute("""
-            SELECT id, title, company, description, location, posted_at, salary, num_applications, work_mode, yoe 
+            SELECT id, title, company, description, location, posted_at, salary, num_applications, work_mode, yoe, skills 
             FROM jobs WHERE posted_by = %s
         """, (user_id,))
         jobs = cur.fetchall()
@@ -70,7 +72,8 @@ def list_employer_jobs():
                 "salary": job[6],
                 "num_applications": job[7],
                 "work_mode": job[8],
-                "yoe": job[9]
+                "yoe": job[9],
+                "skills": job[10] if job[10] else []  # Handle skills as a list
             })
 
         return jsonify({"jobs": jobs_list}), 200
@@ -142,7 +145,7 @@ def update_job(job_id):
         return jsonify({"error": "No update data provided"}), 400
 
     # Allowed fields to update
-    allowed_fields = ["title", "description", "location", "work_mode", "yoe", "salary", "company"]
+    allowed_fields = ["title", "description", "location", "work_mode", "yoe", "salary", "company", "skills"]
     update_fields = []
     update_values = []
 

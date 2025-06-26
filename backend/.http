@@ -14,9 +14,9 @@ POST http://localhost:5000/api/auth/register
 Content-Type: application/json
 
 {
-  "name": "Employer3",
-  "email": "emp3@example.com",
-  "password": "emp3password",
+  "name": "Employer4",
+  "email": "emp4@example.com",
+  "password": "emp4password",
   "role": "employer"
 }
 
@@ -34,8 +34,8 @@ POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "emp3@example.com",
-  "password": "emp3password"
+  "email": "emp4@example.com",
+  "password": "emp4password"
 }
 
 ### Get Profile
@@ -61,34 +61,35 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsI
 ### Create Job as Employer
 POST http://localhost:5000/api/employer/jobs/create
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDkxODkwOSwianRpIjoiOTUyZjBiZjktODkwZi00ODRkLTgzMGMtYzNiZWJjZDFiY2E4IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjUiLCJuYmYiOjE3NTA5MTg5MDksImNzcmYiOiI2YWQyNTc2Ny1kYzFjLTQwM2EtYjk3Ni1hNDA4ODlhMTJmMTEiLCJleHAiOjE3NTA5MjA3MDksIm5hbWUiOiJFbXBsb3llcjMiLCJyb2xlIjoiZW1wbG95ZXIifQ.2X2XpaXqk7ccivj8X3lWpkxhIltuot8M7N3Nd33QwbY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDkyMDkzNCwianRpIjoiOTBhYzNlNDAtMjA5ZC00N2VhLTk2ZTEtN2RkZTYzMzVlZTNmIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYiLCJuYmYiOjE3NTA5MjA5MzQsImNzcmYiOiJkN2ExMDczZS1mNDM1LTQyZWUtYWMyYi02OWMwNDdkYWU2YmIiLCJleHAiOjE3NTA5MjI3MzQsIm5hbWUiOiJFbXBsb3llcjQiLCJyb2xlIjoiZW1wbG95ZXIifQ.gquCG1HOkKPCcl-Qn0KOvfJGF6mUPAfPjeDEZftrZQE
 
 {
-  "title": "FrontEnd Developer",
-  "description": "Build & Design UI for e-commerce apps.",
-  "location": "Chennai",
+  "title": "BackEnd Developer",
+  "description": "Build backend for e-commerce apps.",
+  "location": "Hyderabad",
   "work_mode": "Hybrid",
-  "yoe": "Fresher",
-  "salary": "₹90,000",
-  "company": "FrontEnd Co."
+  "yoe": "4",
+  "salary": "₹50,000",
+  "company": "Backend Co.",
+  "skills": ["Flask", "Java", "Python"]
 }
 
 ### List Jobs Posted by Employer
 GET http://localhost:5000/api/employer/jobs
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDkxODkwOSwianRpIjoiOTUyZjBiZjktODkwZi00ODRkLTgzMGMtYzNiZWJjZDFiY2E4IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjUiLCJuYmYiOjE3NTA5MTg5MDksImNzcmYiOiI2YWQyNTc2Ny1kYzFjLTQwM2EtYjk3Ni1hNDA4ODlhMTJmMTEiLCJleHAiOjE3NTA5MjA3MDksIm5hbWUiOiJFbXBsb3llcjMiLCJyb2xlIjoiZW1wbG95ZXIifQ.2X2XpaXqk7ccivj8X3lWpkxhIltuot8M7N3Nd33QwbY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDkyMDkzNCwianRpIjoiOTBhYzNlNDAtMjA5ZC00N2VhLTk2ZTEtN2RkZTYzMzVlZTNmIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYiLCJuYmYiOjE3NTA5MjA5MzQsImNzcmYiOiJkN2ExMDczZS1mNDM1LTQyZWUtYWMyYi02OWMwNDdkYWU2YmIiLCJleHAiOjE3NTA5MjI3MzQsIm5hbWUiOiJFbXBsb3llcjQiLCJyb2xlIjoiZW1wbG95ZXIifQ.gquCG1HOkKPCcl-Qn0KOvfJGF6mUPAfPjeDEZftrZQE
 
 ### View Applications for a Job as Employer
-GET http://localhost:5000/api/employer/jobs/5/applications
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDkxODkwOSwianRpIjoiOTUyZjBiZjktODkwZi00ODRkLTgzMGMtYzNiZWJjZDFiY2E4IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjUiLCJuYmYiOjE3NTA5MTg5MDksImNzcmYiOiI2YWQyNTc2Ny1kYzFjLTQwM2EtYjk3Ni1hNDA4ODlhMTJmMTEiLCJleHAiOjE3NTA5MjA3MDksIm5hbWUiOiJFbXBsb3llcjMiLCJyb2xlIjoiZW1wbG95ZXIifQ.2X2XpaXqk7ccivj8X3lWpkxhIltuot8M7N3Nd33QwbY
+GET http://localhost:5000/api/employer/jobs/6/applications
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDkyMDkzNCwianRpIjoiOTBhYzNlNDAtMjA5ZC00N2VhLTk2ZTEtN2RkZTYzMzVlZTNmIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYiLCJuYmYiOjE3NTA5MjA5MzQsImNzcmYiOiJkN2ExMDczZS1mNDM1LTQyZWUtYWMyYi02OWMwNDdkYWU2YmIiLCJleHAiOjE3NTA5MjI3MzQsIm5hbWUiOiJFbXBsb3llcjQiLCJyb2xlIjoiZW1wbG95ZXIifQ.gquCG1HOkKPCcl-Qn0KOvfJGF6mUPAfPjeDEZftrZQE
 
 ### Update Job as Employer - PATCH
-PATCH http://localhost:5000/api/employer/jobs/5
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDkxODkwOSwianRpIjoiOTUyZjBiZjktODkwZi00ODRkLTgzMGMtYzNiZWJjZDFiY2E4IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjUiLCJuYmYiOjE3NTA5MTg5MDksImNzcmYiOiI2YWQyNTc2Ny1kYzFjLTQwM2EtYjk3Ni1hNDA4ODlhMTJmMTEiLCJleHAiOjE3NTA5MjA3MDksIm5hbWUiOiJFbXBsb3llcjMiLCJyb2xlIjoiZW1wbG95ZXIifQ.2X2XpaXqk7ccivj8X3lWpkxhIltuot8M7N3Nd33QwbY
+PATCH http://localhost:5000/api/employer/jobs/6
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDkyMDkzNCwianRpIjoiOTBhYzNlNDAtMjA5ZC00N2VhLTk2ZTEtN2RkZTYzMzVlZTNmIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjYiLCJuYmYiOjE3NTA5MjA5MzQsImNzcmYiOiJkN2ExMDczZS1mNDM1LTQyZWUtYWMyYi02OWMwNDdkYWU2YmIiLCJleHAiOjE3NTA5MjI3MzQsIm5hbWUiOiJFbXBsb3llcjQiLCJyb2xlIjoiZW1wbG95ZXIifQ.gquCG1HOkKPCcl-Qn0KOvfJGF6mUPAfPjeDEZftrZQE
 Content-Type: application/json
 
 {
   "salary": "₹95,000",
-  "yoe": "2"
+  "yoe": "Fresher"
 }
 
 ### Delete Job as Employer
@@ -98,3 +99,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsI
 ### Close a job (mark as closed)
 PATCH http://localhost:5000/api/employer/jobs/5/close
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDkxODkwOSwianRpIjoiOTUyZjBiZjktODkwZi00ODRkLTgzMGMtYzNiZWJjZDFiY2E4IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjUiLCJuYmYiOjE3NTA5MTg5MDksImNzcmYiOiI2YWQyNTc2Ny1kYzFjLTQwM2EtYjk3Ni1hNDA4ODlhMTJmMTEiLCJleHAiOjE3NTA5MjA3MDksIm5hbWUiOiJFbXBsb3llcjMiLCJyb2xlIjoiZW1wbG95ZXIifQ.2X2XpaXqk7ccivj8X3lWpkxhIltuot8M7N3Nd33QwbY
+
+### Get all jobs filtered by skill and yoe
+GET http://localhost:5000/api/jobs/search?skill=python&min_yoe=Fresher
+Content-Type: application/json
+
