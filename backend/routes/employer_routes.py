@@ -48,31 +48,48 @@ def create_job():
 def list_employer_jobs():
     try:
         user_id = int(get_jwt_identity())
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+        offset = (page - 1) * per_page
+        status = request.args.get('status', default=None, type=str)
+
         mysql = current_app.extensions['mysql']
         cur = mysql.connection.cursor()
 
-        status = request.args.get('status', default=None, type=str)
+        # Base count query to get total jobs for pagination
+        count_query = "SELECT COUNT(*) FROM jobs WHERE posted_by = %s"
+        params = [user_id]
 
-        # Query jobs posted by this employer
+        # Add status filter to count query
+        if status == 'open':
+            count_query += " AND is_closed = FALSE"
+        elif status == 'closed':
+            count_query += " AND is_closed = TRUE"
+
+        cur.execute(count_query, tuple(params))
+        total = cur.fetchone()[0]
+
+        # Base select query with filters
         query = """
             SELECT id, title, company, description, location, posted_at, salary, num_applications, 
                    work_mode, yoe, skills, is_closed
-            FROM jobs 
+            FROM jobs
             WHERE posted_by = %s
         """
-        params = [user_id]
 
-        # Add status filter if provided
+        # Add status filter to select query
         if status == 'open':
             query += " AND is_closed = FALSE"
         elif status == 'closed':
             query += " AND is_closed = TRUE"
 
+        query += " LIMIT %s OFFSET %s"
+        params.extend([per_page, offset])
+
         cur.execute(query, tuple(params))
         jobs = cur.fetchall()
         cur.close()
 
-        # Format jobs into a list of dictionaries
         jobs_list = []
         for job in jobs:
             jobs_list.append({
@@ -86,11 +103,17 @@ def list_employer_jobs():
                 "num_applications": job[7],
                 "work_mode": job[8],
                 "yoe": job[9],
-                "skills": job[10] if job[10] else [], # Handle skills as a list
-                "is_closed": job[11]
+                "skills": job[10].split(",") if job[10] else [],
+                "is_closed": bool(job[11])
             })
 
-        return jsonify({"jobs": jobs_list}), 200
+        return jsonify({
+            "total": total,
+            "page": page,
+            "per_page": per_page,
+            "total_pages": (total + per_page - 1) // per_page,
+            "jobs": jobs_list
+        }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

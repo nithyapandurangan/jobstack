@@ -33,39 +33,61 @@ def list_users():
 @admin_bp.route('/jobs', methods=['GET'])
 @jwt_required()
 def list_all_jobs():
-    user_id = int(get_jwt_identity())
-    if not is_admin(user_id):
-        return jsonify({"error": "Unauthorized"}), 403
+    try:
+        user_id = int(get_jwt_identity())
+        if not is_admin(user_id):
+            return jsonify({"error": "Unauthorized"}), 403
 
-    mysql = current_app.extensions['mysql']
-    cur = mysql.connection.cursor()
-    cur.execute("""
-        SELECT id, title, company, description, location, posted_by, posted_at, salary,
-               num_applications, work_mode, yoe, is_closed, skills
-        FROM jobs
-    """)
-    jobs = cur.fetchall()
-    cur.close()
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+        offset = (page - 1) * per_page
 
-    job_list = []
-    for job in jobs:
-        job_list.append({
-            "id": job[0],
-            "title": job[1],
-            "company": job[2],
-            "description": job[3],
-            "location": job[4],
-            "posted_by": job[5],
-            "posted_at": job[6].isoformat() if job[6] else None,
-            "salary": job[7],
-            "num_applications": job[8],
-            "work_mode": job[9],
-            "yoe": job[10],
-            "is_closed": bool(job[11]),
-            "skills": job[12].split(",") if job[12] else []
-        })
+        mysql = current_app.extensions['mysql']
+        cur = mysql.connection.cursor()
 
-    return jsonify({"jobs": job_list}), 200
+        # Get total count of jobs for pagination
+        cur.execute("SELECT COUNT(*) FROM jobs")
+        total = cur.fetchone()[0]
+
+        # Fetch jobs with pagination
+        cur.execute("""
+            SELECT id, title, company, description, location, posted_by, posted_at, salary,
+                   num_applications, work_mode, yoe, is_closed, skills
+            FROM jobs
+            LIMIT %s OFFSET %s
+        """, (per_page, offset))
+        jobs = cur.fetchall()
+        cur.close()
+
+        job_list = []
+        for job in jobs:
+            job_list.append({
+                "id": job[0],
+                "title": job[1],
+                "company": job[2],
+                "description": job[3],
+                "location": job[4],
+                "posted_by": job[5],
+                "posted_at": job[6].isoformat() if job[6] else None,
+                "salary": job[7],
+                "num_applications": job[8],
+                "work_mode": job[9],
+                "yoe": job[10],
+                "is_closed": bool(job[11]),
+                "skills": job[12].split(",") if job[12] else []
+            })
+
+        return jsonify({
+            "total": total,
+            "page": page,
+            "per_page": per_page,
+            "total_pages": (total + per_page - 1) // per_page,
+            "jobs": job_list
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 ### /applications- to view all applications
 @admin_bp.route('/applications', methods=['GET'])

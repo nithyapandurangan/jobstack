@@ -38,9 +38,25 @@ def profile():
 @jobseeker_bp.route('/jobs', methods=['GET'])
 def list_jobs():
     try:
+        # Pagination parameters
+        # Default to page 1 and 10 jobs per page if not provided
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+        offset = (page - 1) * per_page
+
         mysql = current_app.extensions['mysql']
         cur = mysql.connection.cursor()
-        cur.execute("SELECT id, title, company, description, location, posted_at, salary, num_applications, work_mode, yoe, skills FROM jobs")
+
+        # Total count for pagination metadata
+        cur.execute("SELECT COUNT(*) FROM jobs")
+        total = cur.fetchone()[0]
+
+        # Fetch jobs with pagination
+        cur.execute("""
+        SELECT id, title, company, description, location, posted_at, salary, num_applications, work_mode, yoe, skills " \
+        FROM jobs
+        LIMIT %s OFFSET %s 
+        """, (per_page, offset))
         jobs = cur.fetchall()
         cur.close()
 
@@ -60,7 +76,13 @@ def list_jobs():
                 "skills": job[10]
             })
 
-        return jsonify({"jobs": jobs_list}), 200
+        return jsonify({
+            "total": total,
+            "page": page,
+            "per_page": per_page,
+            "total_pages": (total + per_page - 1) // per_page,
+            "jobs": jobs_list
+        }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -115,8 +137,17 @@ def apply_to_job():
 def list_applications():
     try:
         user_id = int(get_jwt_identity())
+        # Pagination parameters
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+        offset = (page - 1) * per_page
+
         mysql = current_app.extensions['mysql']
         cur = mysql.connection.cursor()
+
+         # Total count of applications for pagination metadata
+        cur.execute("SELECT COUNT(*) FROM applications WHERE user_id = %s", (user_id,))
+        total = cur.fetchone()[0]
 
         # Join applications with jobs to get job details for this user
         query = """
@@ -125,8 +156,9 @@ def list_applications():
             JOIN jobs ON applications.job_id = jobs.id
             WHERE applications.user_id = %s
             ORDER BY applications.applied_at DESC
+            LIMIT %s OFFSET %s
         """
-        cur.execute(query, (user_id,))
+        cur.execute(query, (user_id, per_page, offset))
         applications = cur.fetchall()
         cur.close()
 
@@ -143,7 +175,13 @@ def list_applications():
                 "applied_at": app[7].isoformat() if app[7] else None
             })
 
-        return jsonify({"applications": applied_jobs}), 200
+        return jsonify({
+            "total": total,
+            "page": page,
+            "per_page": per_page,
+            "total_pages": (total + per_page - 1) // per_page,
+            "applications": applied_jobs
+        }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
