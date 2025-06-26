@@ -1,7 +1,17 @@
-from flask import Blueprint, jsonify, current_app, request
+import os
+from flask import Blueprint, jsonify, current_app, request, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from werkzeug.utils import secure_filename
 
 jobseeker_bp = Blueprint('jobseeker', __name__)
+
+# Define upload folder and allowed file extensions for resumes
+UPLOAD_FOLDER = 'uploads/resumes'
+ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx'}
+
+# Ensure the upload folder exists
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 ### /Profile endpoint that requires JWT authentication
 @jobseeker_bp.route('/profile', methods=['GET'])
@@ -185,3 +195,58 @@ def list_applications():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+### /Profile/resume endpoint to upload resume
+@jobseeker_bp.route('/profile/resume', methods=['POST'])
+@jwt_required()
+def upload_resume():
+    if 'resume' not in request.files:
+        return jsonify({"error": "No resume file provided"}), 400
+
+    file = request.files['resume']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        user_id = int(get_jwt_identity())
+
+        # Create user-specific folder if needed
+        user_folder = os.path.join(current_app.root_path, UPLOAD_FOLDER, str(user_id))
+        os.makedirs(user_folder, exist_ok=True)
+
+        file_path = os.path.join(user_folder, filename)
+        file.save(file_path)
+
+        # Save file_path or relative path in DB (you might want a new column in users or resumes table)
+        mysql = current_app.extensions['mysql']
+        cur = mysql.connection.cursor()
+        cur.execute("UPDATE users SET resume_path = %s WHERE id = %s", (file_path, user_id))
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"message": "Resume uploaded successfully"}), 201
+    else:
+        return jsonify({"error": "Invalid file type"}), 400
+    
+### /Profile/resume endpoint to download resume
+@jobseeker_bp.route('/profile/resume', methods=['GET'])
+@jwt_required()
+def get_resume():
+    user_id = int(get_jwt_identity())
+
+    mysql = current_app.extensions['mysql']
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT resume_path FROM users WHERE id = %s", (user_id,))
+    result = cur.fetchone()
+    cur.close()
+
+    if not result or not result[0]:
+        return jsonify({"error": "Resume not found"}), 404
+
+    resume_path = result[0]
+
+    try:
+        return send_file(resume_path, as_attachment=True)
+    except FileNotFoundError:
+        return jsonify({"error": "Resume file missing"}), 404
