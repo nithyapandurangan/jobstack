@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 jobseeker_bp = Blueprint('jobseeker', __name__)
 
-# /Profile endpoint that requires JWT authentication
+### /Profile endpoint that requires JWT authentication
 @jobseeker_bp.route('/profile', methods=['GET'])
 @jwt_required() 
 def profile():
@@ -34,13 +34,13 @@ def profile():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# /jobs endpoint to get all jobs
+### /jobs endpoint to get all jobs
 @jobseeker_bp.route('/jobs', methods=['GET'])
 def list_jobs():
     try:
         mysql = current_app.extensions['mysql']
         cur = mysql.connection.cursor()
-        cur.execute("SELECT id, title, company, description, location, posted_at, salary, num_applications, work_mode, yoe FROM jobs")
+        cur.execute("SELECT id, title, company, description, location, posted_at, salary, num_applications, work_mode, yoe, skills FROM jobs")
         jobs = cur.fetchall()
         cur.close()
 
@@ -56,7 +56,8 @@ def list_jobs():
                 "salary": job[6],
                 "num_applications": job[7],
                 "work_mode": job[8],
-                "yoe": job[9]
+                "yoe": job[9],
+                "skills": job[10]
             })
 
         return jsonify({"jobs": jobs_list}), 200
@@ -64,7 +65,7 @@ def list_jobs():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# /Jobs/apply endpoint that requires JWT authentication    
+### /Jobs/apply endpoint that requires JWT authentication    
 @jobseeker_bp.route('/jobs/apply', methods=['POST'])
 @jwt_required()
 def apply_to_job():
@@ -81,11 +82,13 @@ def apply_to_job():
         mysql = current_app.extensions['mysql']
         cur = mysql.connection.cursor()
 
-        # Check if job exists
-        cur.execute("SELECT id FROM jobs WHERE id = %s", (job_id,))
+        # Check if job exists and still open
+        cur.execute("SELECT id, is_closed FROM jobs WHERE id = %s", (job_id,))
         job = cur.fetchone()
         if not job:
             return jsonify({"error": "Job not found"}), 404
+        if job[1]:  # is_closed is True
+            return jsonify({"error": "This job is closed and no longer accepting applications"}), 400
 
         # Check if already applied
         cur.execute("SELECT * FROM applications WHERE user_id = %s AND job_id = %s", (user_id, job_id))
@@ -106,7 +109,7 @@ def apply_to_job():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# /Applications endpoint to list all job applications for the user
+### /Applications endpoint to list all job applications for the user
 @jobseeker_bp.route('/applications', methods=['GET'])
 @jwt_required()
 def list_applications():

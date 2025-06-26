@@ -10,11 +10,12 @@ def search_jobs():
     skill = request.args.get('skill', type=str)
     min_yoe = request.args.get('min_yoe', type=int)
     max_yoe = request.args.get('max_yoe', type=int)
+    status = request.args.get('status', default='open', type=str)
 
     query = """
-        SELECT id, title, company, description, location, posted_at, salary,
-               num_applications, work_mode, yoe, skills
-        FROM jobs
+        SELECT id, title, company, description, location, posted_at, salary, num_applications, 
+               work_mode, yoe, skills, is_closed 
+        FROM jobs 
         WHERE 1=1
     """
     params = []
@@ -34,6 +35,13 @@ def search_jobs():
         query += " AND yoe REGEXP '^[0-9]+$' AND CAST(yoe AS UNSIGNED) <= %s"
         params.append(max_yoe)
 
+    # Status filtering
+    if status == 'open':
+        query += " AND is_closed = FALSE"
+    elif status == 'closed':
+        query += " AND is_closed = TRUE"
+
+    # If no filters are applied, return all jobs
     cursor.execute(query, tuple(params))
     jobs = cursor.fetchall()
     cursor.close()
@@ -51,7 +59,8 @@ def search_jobs():
             "num_applications": job[7],
             "work_mode": job[8],
             "yoe": job[9],
-            "skills": job[10].split(",") if job[10] else []
+            "skills": job[10].split(",") if job[10] else [],
+            "is_closed": job[11]
         })
 
     return jsonify({"jobs": jobs_list}), 200

@@ -51,11 +51,24 @@ def list_employer_jobs():
         mysql = current_app.extensions['mysql']
         cur = mysql.connection.cursor()
 
+        status = request.args.get('status', default=None, type=str)
+
         # Query jobs posted by this employer
-        cur.execute("""
-            SELECT id, title, company, description, location, posted_at, salary, num_applications, work_mode, yoe, skills 
-            FROM jobs WHERE posted_by = %s
-        """, (user_id,))
+        query = """
+            SELECT id, title, company, description, location, posted_at, salary, num_applications, 
+                   work_mode, yoe, skills, is_closed
+            FROM jobs 
+            WHERE posted_by = %s
+        """
+        params = [user_id]
+
+        # Add status filter if provided
+        if status == 'open':
+            query += " AND is_closed = FALSE"
+        elif status == 'closed':
+            query += " AND is_closed = TRUE"
+
+        cur.execute(query, tuple(params))
         jobs = cur.fetchall()
         cur.close()
 
@@ -73,7 +86,8 @@ def list_employer_jobs():
                 "num_applications": job[7],
                 "work_mode": job[8],
                 "yoe": job[9],
-                "skills": job[10] if job[10] else []  # Handle skills as a list
+                "skills": job[10] if job[10] else [], # Handle skills as a list
+                "is_closed": job[11]
             })
 
         return jsonify({"jobs": jobs_list}), 200

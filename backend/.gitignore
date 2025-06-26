@@ -8,6 +8,8 @@ __pycache__/
 # MacOS generated files
 .DS_Store
 
+# HTTP files
+*.http
 .http
-
+backend/.http
 
